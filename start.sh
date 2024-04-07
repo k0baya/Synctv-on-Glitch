@@ -51,6 +51,17 @@ run_web() {
     exec ./app.js $CMD 2>&1 &
 }
 
+generate_autodel() {
+  cat > auto_del.sh <<EOF
+while true; do
+  rm -rf /app/.git
+  sleep 5
+done
+EOF
+}
+
+[ -e auto_del.sh ] && bash auto_del.sh &
+
 TMP_DIRECTORY="$(mktemp -d)"
 ZIP_FILE="${TMP_DIRECTORY}/synctv-linux-amd64"
 
