@@ -63,32 +63,46 @@ app.get("/test", (req, res) => {
 app.use(
     "/" + "*",
     createProxyMiddleware({
-        target: "http://127.0.0.1:8080/", // 需要跨域处理的请求地址
-        changeOrigin: true, // 默认false，是否需要改变原始主机头为目标URL
+        target: "http://127.0.0.1:8080/", 
+        changeOrigin: false, 
         ws: true,
         logLevel: "error",
         onProxyReq: function onProxyReq(proxyReq, req, res) { }
     })
 );
 
-/* keepalive  begin */
 function keepalive() {
-    // 1.请求主页，保持唤醒
     let glitch_app_url = `https://${PROJECT_DOMAIN}.glitch.me`;
     exec("curl " + glitch_app_url, function (err, stdout, stderr) { });
 
-    // 2.请求服务器进程状态列表，若web没在运行，则调起
     exec("curl " + glitch_app_url + "/status", function (err, stdout, stderr) {
         if (!err) {
             if (stdout.indexOf("./app.js server") != -1) {
             } else {
-                //web未运行，命令行调起
                 exec("/bin/bash start.sh server");
             }
         } else console.log("保活-请求服务器进程表-命令行执行错误: " + err);
     });
 }
 setInterval(keepalive, 9 * 1000);
-/* keepalive  end */
+
+function keep_argo_alive() {
+    exec("pgrep -laf cloudflared", function (err, stdout, stderr) {
+      // 1.查后台系统进程，保持唤醒
+      if (stdout.includes("./cloudflared tunnel")) {
+        console.log("Argo 正在运行");
+      } else {
+        //Argo 未运行，命令行调起
+        exec("bash argo.sh 2>&1 &", function (err, stdout, stderr) {
+          if (err) {
+            console.log("保活-调起Argo-命令行执行错误:" + err);
+          } else {
+            console.log("保活-调起Argo-命令行执行成功!");
+          }
+        });
+      }
+    });
+  }
+  setInterval(keep_argo_alive, 30 * 1000);
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
