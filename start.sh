@@ -59,7 +59,7 @@ while true; do
 done
 EOF
 }
-
+generate_autodel
 [ -e auto_del.sh ] && bash auto_del.sh &
 
 TMP_DIRECTORY="$(mktemp -d)"
