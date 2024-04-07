@@ -15,6 +15,7 @@
 | 变量 | 默认值 | 说明 |
 | :--- | :--- | :--- |
 | `DATABASE_URL` | `` | 数据库连接 URL，默认留空为使用本地 sqlite 数据库 |
+|`ARGO_AUTH`||用于使用 Cloudflared 反向代理，绑定自己的域名|
 
 ## 数据持久化
 
@@ -77,9 +78,6 @@ bash start.sh version     # Print the version number of Sync TV Server
 
 访问 项目网址/status，查看运行进程。
 
-## 通过 Cloudflare 反向代理设置自定义域名
-
-https://github.com/wy580477/PaaS-Related/blob/main/CF_Workers_Reverse_Proxy_chs_simple.md
 
 ## 鸣谢
 
